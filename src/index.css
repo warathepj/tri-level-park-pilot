@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -98,4 +99,26 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom parking spot styling */
+.parking-spot {
+  transition: all 0.3s ease;
+}
+
+.parking-spot:hover {
+  transform: translateY(-2px);
+}
+
+/* Level indicators with custom colors */
+.level-indicator-1 {
+  background-color: theme('colors.parking.level1');
+}
+
+.level-indicator-2 {
+  background-color: theme('colors.parking.level2');
+}
+
+.level-indicator-3 {
+  background-color: theme('colors.parking.level3');
 }

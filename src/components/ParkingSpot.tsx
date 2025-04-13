@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { cn } from "@/lib/utils";
+import { CircleCheck, CircleX } from 'lucide-react';
 
 interface ParkingSpotProps {
   spotNumber: number;
@@ -19,22 +20,40 @@ const ParkingSpot: React.FC<ParkingSpotProps> = ({
     <button
       onClick={onClick}
       className={cn(
-        "relative flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-md transition-all duration-300 shadow-md",
+        "relative flex flex-col items-center justify-center w-16 h-20 md:w-24 md:h-28 rounded-md transition-all duration-300 shadow-md border-2 hover:shadow-lg",
         isOccupied 
-          ? "bg-gray-300 text-gray-600" 
-          : `bg-white hover:bg-opacity-90 text-gray-800 border-2`,
-        !isOccupied && `border-${levelColor}`
+          ? "bg-gray-100 border-gray-300" 
+          : "bg-white hover:bg-opacity-90 border-2"
       )}
       style={{
         borderColor: !isOccupied ? levelColor : undefined
       }}
     >
-      <span className="text-lg font-bold">{spotNumber}</span>
-      {isOccupied && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30 rounded-md">
-          <span className="text-xs font-bold text-white">OCCUPIED</span>
-        </div>
-      )}
+      {/* Occupancy Indicator */}
+      <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-sm">
+        {isOccupied ? (
+          <CircleX className="w-5 h-5 text-red-500" />
+        ) : (
+          <CircleCheck className="w-5 h-5 text-green-500" />
+        )}
+      </div>
+      
+      {/* Parking Lines */}
+      <div className="absolute inset-1 border-2 border-dashed opacity-30" 
+        style={{ borderColor: levelColor }}></div>
+      
+      {/* Space Number */}
+      <div className="mt-1 text-xl font-bold">
+        {spotNumber}
+      </div>
+      
+      {/* Status Text */}
+      <div className={cn(
+        "text-xs mt-1 font-medium",
+        isOccupied ? "text-red-500" : "text-green-500"
+      )}>
+        {isOccupied ? "OCCUPIED" : "VACANT"}
+      </div>
     </button>
   );
 };

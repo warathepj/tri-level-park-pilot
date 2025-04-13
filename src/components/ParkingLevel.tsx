@@ -21,7 +21,7 @@ const ParkingLevel: React.FC<ParkingLevelProps> = ({
 
   return (
     <div className="animate-fade-in w-full max-w-4xl">
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 p-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 p-6">
         {spots.map((isOccupied, index) => (
           <ParkingSpot
             key={`level-${level}-spot-${index}`}

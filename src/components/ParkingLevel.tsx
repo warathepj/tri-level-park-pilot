@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import ParkingSpot from './ParkingSpot';
 import { cn } from '@/lib/utils';
@@ -85,7 +84,6 @@ const ParkingLevel: React.FC<ParkingLevelProps> = ({
             levelColor={levelColor}
             level={level}
             index={index}
-            onCarParked={() => onToggleSpot(level, index)}
           />
         ))}
       </div>

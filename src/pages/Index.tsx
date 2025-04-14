@@ -1,9 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import ParkingLevel from '@/components/ParkingLevel';
 import LevelSelector from '@/components/LevelSelector';
 import ParkingIndicator from '@/components/ParkingIndicator';
-import Car from '@/components/Car';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 
@@ -158,34 +156,11 @@ const Index = () => {
     }
   };
 
-  const handleCarParked = (spotIndex: number, levelIndex: number) => {
-    if (!parkingState[levelIndex - 1][spotIndex]) {
-      handleToggleSpot(levelIndex, spotIndex);
-      toast.success(`Car successfully parked at spot ${spotIndex + 1} on Level ${levelIndex}!`, {
-        icon: '🚗'
-      });
-    }
-  };
-
-  // Listen for car park attempts
-  useEffect(() => {
-    const handleCarParkAttempt = (e: CustomEvent) => {
-      const { x, y } = e.detail;
-      // This event is handled by each individual ParkingSpot component
-    };
-
-    window.addEventListener('car-park-attempt' as any, handleCarParkAttempt as any);
-    
-    return () => {
-      window.removeEventListener('car-park-attempt' as any, handleCarParkAttempt as any);
-    };
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center px-4 py-8 relative">
       <header className="w-full max-w-4xl mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2">3-Level Parking Simulator</h1>
-        <p className="text-gray-600">Drag the car to a parking space or click on a space to toggle between available and occupied</p>
+        <p className="text-gray-600">Click on a space to toggle between available and occupied</p>
       </header>
 
       <div className="w-full flex flex-col items-center gap-8 mb-8">
@@ -232,9 +207,6 @@ const Index = () => {
               previousLevel={previousLevel}
             />
           ))}
-          
-          {/* Interactive car */}
-          <Car onParked={handleCarParked} />
         </Card>
       </div>
     </div>

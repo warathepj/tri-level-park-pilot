@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import ParkingLevel from '@/components/ParkingLevel';
 import LevelSelector from '@/components/LevelSelector';
@@ -9,6 +10,7 @@ import { toast } from 'sonner';
 const TOTAL_LEVELS = 3;
 const SPOTS_PER_LEVEL = 30;
 const LEVEL_COLORS = ['#3B82F6', '#10B981', '#F59E0B']; // Blue, Green, Orange
+const STORAGE_KEY = 'parking-simulator-state';
 
 // Function to generate random parking state
 const generateRandomParkingState = () => {
@@ -68,28 +70,79 @@ const generateRandomParkingState = () => {
   return newParkingState;
 };
 
+// Function to load parking state from localStorage
+const loadParkingState = (): boolean[][] | null => {
+  try {
+    const savedState = localStorage.getItem(STORAGE_KEY);
+    if (savedState) {
+      return JSON.parse(savedState);
+    }
+    return null;
+  } catch (error) {
+    console.error('Failed to load parking state:', error);
+    return null;
+  }
+};
+
+// Function to save parking state to localStorage
+const saveParkingState = (state: boolean[][]) => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error('Failed to save parking state:', error);
+  }
+};
+
 const Index = () => {
-  // Initialize parking state with random occupancy
-  const [parkingState, setParkingState] = useState<boolean[][]>(() => 
-    generateRandomParkingState()
-  );
+  // Initialize parking state with saved data or generate random state
+  const [parkingState, setParkingState] = useState<boolean[][]>(() => {
+    const savedState = loadParkingState();
+    if (savedState) {
+      return savedState;
+    }
+    return generateRandomParkingState();
+  });
   
   const [currentLevel, setCurrentLevel] = useState(1);
+  const [previousLevel, setPreviousLevel] = useState(1);
+  const [transitionDirection, setTransitionDirection] = useState<'up' | 'down' | null>(null);
   
   // Calculate available spots for each level
   const availableCounts = parkingState.map(level => 
     level.filter(spot => !spot).length
   );
   
-  // Show initialization toast
+  // Show initialization toast based on whether state was loaded or generated
   useEffect(() => {
     const totalOccupied = parkingState.flat().filter(spot => spot).length;
-    toast.info(`Parking initialized with ${totalOccupied} vehicles across all levels`, {
-      duration: 3000,
-      position: 'top-center',
-      icon: '🚗'
-    });
+    
+    const savedState = loadParkingState();
+    if (savedState) {
+      toast.info(`Loaded parking state with ${totalOccupied} vehicles across all levels`, {
+        duration: 3000,
+        position: 'top-center',
+        icon: '🔄'
+      });
+    } else {
+      toast.info(`Parking initialized with ${totalOccupied} vehicles across all levels`, {
+        duration: 3000,
+        position: 'top-center',
+        icon: '🚗'
+      });
+    }
   }, []);
+
+  // Save parking state whenever it changes
+  useEffect(() => {
+    saveParkingState(parkingState);
+  }, [parkingState]);
+
+  // Handle level transitions with animation direction
+  const handleLevelChange = (newLevel: number) => {
+    setPreviousLevel(currentLevel);
+    setTransitionDirection(newLevel > currentLevel ? 'up' : 'down');
+    setCurrentLevel(newLevel);
+  };
 
   const handleToggleSpot = (level: number, spotIndex: number) => {
     const newParkingState = [...parkingState];
@@ -138,7 +191,7 @@ const Index = () => {
       <div className="w-full flex flex-col items-center gap-8 mb-8">
         <LevelSelector
           currentLevel={currentLevel}
-          onLevelChange={setCurrentLevel}
+          onLevelChange={handleLevelChange}
           totalLevels={TOTAL_LEVELS}
           availableCounts={availableCounts}
           totalSpots={SPOTS_PER_LEVEL}
@@ -166,7 +219,7 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Display the active parking level */}
+          {/* Display the active parking level with transition animations */}
           {Array.from({ length: TOTAL_LEVELS }, (_, i) => i + 1).map(level => (
             <ParkingLevel
               key={`parking-level-${level}`}
@@ -175,6 +228,8 @@ const Index = () => {
               onToggleSpot={handleToggleSpot}
               isActive={currentLevel === level}
               levelColor={LEVEL_COLORS[level - 1]}
+              transitionDirection={level === currentLevel ? transitionDirection : null}
+              previousLevel={previousLevel}
             />
           ))}
           

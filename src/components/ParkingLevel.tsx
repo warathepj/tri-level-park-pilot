@@ -29,6 +29,9 @@ const ParkingLevel: React.FC<ParkingLevelProps> = ({
             isOccupied={isOccupied}
             onClick={() => onToggleSpot(level, index)}
             levelColor={levelColor}
+            level={level}
+            index={index}
+            onCarParked={() => onToggleSpot(level, index)}
           />
         ))}
       </div>

@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import { CircleCheck, CircleX } from 'lucide-react';
 
@@ -21,7 +21,20 @@ const ParkingSpot: React.FC<ParkingSpotProps> = ({
   index
 }) => {
   const [isHovering, setIsHovering] = useState(false);
+  const [registrationNumber, setRegistrationNumber] = useState<string | null>(null);
   const spotRef = useRef<HTMLButtonElement>(null);
+  
+  // Generate a random registration number when the spot becomes occupied
+  useEffect(() => {
+    if (isOccupied) {
+      // Format: 1 capital letter (A-Z) followed by 4 numbers (0-9)
+      const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26)); // A-Z
+      const numbers = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join('');
+      setRegistrationNumber(`${letter}${numbers}`);
+    } else {
+      setRegistrationNumber(null);
+    }
+  }, [isOccupied]);
   
   return (
     <button
@@ -57,6 +70,13 @@ const ParkingSpot: React.FC<ParkingSpotProps> = ({
       <div className="mt-1 text-xl font-bold">
         {spotNumber}
       </div>
+      
+      {/* Registration Number (only shown when occupied) */}
+      {isOccupied && registrationNumber && (
+        <div className="bg-yellow-300 px-2 py-0.5 text-xs font-mono font-bold rounded-sm mt-1 shadow-sm">
+          {registrationNumber}
+        </div>
+      )}
       
       {/* Status Text */}
       <div className={cn(

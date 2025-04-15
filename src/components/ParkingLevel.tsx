@@ -69,7 +69,7 @@ const ParkingLevel: React.FC<ParkingLevelProps> = ({
 
   return (
     <div className={cn(
-      "w-full max-w-4xl transition-all duration-500 absolute top-0 left-0",
+      "w-full max-w-4xl transition-all duration-500 absolute top-0 left-0 mt-[22rem]",
       getAnimationClass(),
       !isActive && 'pointer-events-none',
       isActive ? 'opacity-100 z-10' : 'opacity-0 z-0'

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ParkingLevel from '@/components/ParkingLevel';
 import LevelSelector from '@/components/LevelSelector';
 import ParkingIndicator from '@/components/ParkingIndicator';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 const TOTAL_LEVELS = 3;
 const SPOTS_PER_LEVEL = 30;
@@ -92,6 +94,8 @@ const saveParkingState = (state: boolean[][]) => {
 };
 
 const Index = () => {
+  const navigate = useNavigate();
+
   // Initialize parking state with saved data or generate random state
   const [parkingState, setParkingState] = useState<boolean[][]>(() => {
     const savedState = loadParkingState();
@@ -161,6 +165,7 @@ const Index = () => {
       <header className="w-full max-w-4xl mb-8 text-center">
         <h1 className="text-3xl sm:text-4xl font-bold mb-2">3-Level Parking Simulator</h1>
         <p className="text-gray-600">Click on a space to toggle between available and occupied</p>
+        <Button onClick={() => navigate('/data')}>Data</Button>
       </header>
 
       <div className="w-full flex flex-col items-center gap-8 mb-8">
@@ -185,7 +190,7 @@ const Index = () => {
             <div className="flex flex-col items-center">
               <div className="flex gap-2 items-center mb-1">
                 <div className="w-4 h-4 bg-white border-2 border-gray-400"></div>
-                <span>Available</span>
+                <span>Available japan</span>
               </div>
               <div className="flex gap-2 items-center">
                 <div className="w-4 h-4 bg-gray-300"></div>

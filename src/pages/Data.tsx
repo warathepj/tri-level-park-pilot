@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 interface ParkingData {
   levels: {
@@ -33,9 +34,13 @@ const Data: React.FC = () => {
     const loadParkingData = () => {
       try {
         const savedState = localStorage.getItem(STORAGE_KEY);
-        if (!savedState) return null;
+        if (!savedState) {
+          console.log('No saved state found');
+          return;
+        }
 
         const rawData = JSON.parse(savedState) as boolean[][];
+        console.log('Loaded raw data:', rawData);
         
         // Process the raw data into a more detailed format
         const levels = rawData.map((level, levelIndex) => {
@@ -71,9 +76,11 @@ const Data: React.FC = () => {
           }
         };
 
+        console.log('Processed data:', processedData);
         setParkingData(processedData);
       } catch (error) {
         console.error('Failed to load parking data:', error);
+        toast.error('Failed to load parking data');
       }
     };
 
@@ -113,3 +120,6 @@ const Data: React.FC = () => {
 };
 
 export default Data;
+
+
+

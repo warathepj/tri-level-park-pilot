@@ -11,6 +11,7 @@ const TOTAL_LEVELS = 3;
 const SPOTS_PER_LEVEL = 30;
 const LEVEL_COLORS = ['#3B82F6', '#10B981', '#F59E0B']; // Blue, Green, Orange
 const STORAGE_KEY = 'parking-simulator-state';
+const PUBLISHER_URL = 'http://localhost:3000/parking-data';
 
 // Function to generate random parking state
 const generateRandomParkingState = () => {
@@ -93,6 +94,32 @@ const saveParkingState = (state: boolean[][]) => {
   }
 };
 
+const sendDataToPublisher = async (parkingData: any) => {
+  try {
+    console.log('Sending data to publisher:', parkingData);
+    
+    const response = await fetch(PUBLISHER_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(parkingData),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send data to publisher: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log('Publisher response:', result);
+    toast.success('Data sent to publisher successfully');
+  } catch (error) {
+    console.error('Error sending data to publisher:', error);
+    toast.error(`Failed to send data to publisher: ${error.message}`);
+  }
+};
+
 const Index = () => {
   const navigate = useNavigate();
 
@@ -137,6 +164,46 @@ const Index = () => {
   // Save parking state whenever it changes
   useEffect(() => {
     saveParkingState(parkingState);
+  }, [parkingState]);
+
+  useEffect(() => {
+    const processAndSendData = () => {
+      const levels = parkingState.map((level, levelIndex) => {
+        const occupiedSpots = level.filter(spot => spot).length;
+        const availableSpots = SPOTS_PER_LEVEL - occupiedSpots;
+
+        return {
+          levelNumber: levelIndex + 1,
+          totalSpots: SPOTS_PER_LEVEL,
+          availableSpots,
+          occupiedSpots,
+          spots: level.map((isOccupied, spotIndex) => ({
+            spotNumber: spotIndex + 1,
+            isOccupied,
+            ...(isOccupied && {
+              registrationNumber: `${String.fromCharCode(65 + Math.floor(Math.random() * 26))}${Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join('')}`
+            })
+          }))
+        };
+      });
+
+      const totalSpots = SPOTS_PER_LEVEL * parkingState.length;
+      const totalOccupied = parkingState.flat().filter(spot => spot).length;
+
+      const processedData = {
+        levels,
+        totalOccupancy: {
+          total: totalSpots,
+          available: totalSpots - totalOccupied,
+          occupied: totalOccupied,
+          occupancyRate: (totalOccupied / totalSpots) * 100
+        }
+      };
+
+      sendDataToPublisher(processedData);
+    };
+
+    processAndSendData();
   }, [parkingState]);
 
   // Handle level transitions with animation direction

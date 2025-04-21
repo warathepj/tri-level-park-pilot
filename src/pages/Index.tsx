@@ -11,7 +11,7 @@ const TOTAL_LEVELS = 3;
 const SPOTS_PER_LEVEL = 30;
 const LEVEL_COLORS = ['#3B82F6', '#10B981', '#F59E0B']; // Blue, Green, Orange
 const STORAGE_KEY = 'parking-simulator-state';
-const PUBLISHER_URL = 'http://localhost:3000/parking-data';
+const PUBLISHER_URL = 'http://localhost:3004/parking-data';
 
 // Function to generate random parking state
 const generateRandomParkingState = () => {
